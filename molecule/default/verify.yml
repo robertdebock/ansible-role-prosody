@@ -1,0 +1,19 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check if connection works
+      ansible.builtin.ping:
+
+    - name: Verify prosody ports are listening
+      ansible.builtin.wait_for:
+        port: "{{ item }}"
+        timeout: 10
+      loop:
+        - 5280
+        - 5281
+        - 5222
+        - 5269

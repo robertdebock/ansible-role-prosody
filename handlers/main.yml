@@ -1,0 +1,19 @@
+---
+# handlers file for prosody
+
+- name: Validate prosody configuration
+  ansible.builtin.command:
+    cmd: "{{ prosody_binary }} check"
+  changed_when: false
+  failed_when: false
+  register: prosody_check_result
+
+- name: Display prosody configuration check results
+  ansible.builtin.debug:
+    msg: "{{ prosody_check_result.stdout_lines }}"
+  when: prosody_check_result.rc != 0
+
+- name: Restart prosody
+  ansible.builtin.service:
+    name: "{{ prosody_service }}"
+    state: restarted
