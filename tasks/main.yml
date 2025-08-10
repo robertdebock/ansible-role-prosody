@@ -11,14 +11,12 @@
   when:
     - ansible_os_family == "Alpine"
   block:
-
-    
     - name: Alpine - Create machine-id if it doesn't exist
       ansible.builtin.copy:
         content: "{{ ansible_machine_id | default('0123456789abcdef0123456789abcdef') }}"
         dest: /etc/machine-id
         mode: "0644"
-    
+
     - name: Alpine - Create minimal dev service script
       ansible.builtin.copy:
         content: |
@@ -36,19 +34,19 @@
           }
         dest: /etc/init.d/dev
         mode: "0755"
-    
+
     - name: Alpine - Ensure OpenRC runlevel directory exists
       ansible.builtin.file:
         path: /etc/runlevels/default
         state: directory
         mode: "0755"
-    
+
     - name: Alpine - Add dev service to default runlevel
       ansible.builtin.file:
         src: /etc/init.d/dev
         dest: /etc/runlevels/default/dev
         state: link
-      ignore_errors: true
+      failed_when: false
 
 - name: Install prosody
   ansible.builtin.package:
@@ -126,15 +124,10 @@
   ansible.builtin.command:
     cmd: "{{ prosody_binary }} start"
   register: prosody_alpine_start
-  changed_when: 
+  changed_when:
     - prosody_alpine_start.rc == 0
     - "'already running' not in prosody_alpine_start.stdout"
   failed_when: false
-  when: 
+  when:
     - ansible_os_family == "Alpine"
     - prosody_alpine_status_check.rc != 0
-
-
-
-
-
