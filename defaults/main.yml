@@ -95,6 +95,10 @@ prosody_log_level: info
 # Enable daemon mode
 prosody_daemon_enable: true
 
+# POSIX module (for prosodyctl process management)
+# See: https://prosody.im/doc/prosodyctl#pidfile
+prosody_posix_enable: true
+
 # User to run prosody as
 prosody_user: prosody
 

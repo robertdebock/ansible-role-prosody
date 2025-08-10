@@ -4,6 +4,11 @@
 _prosody_packages:
   default:
     - prosody
+  Alpine:
+    - prosody
+    - lua-socket
+    - lua-sec
+    - openrc
   Debian:
     - prosody
     - lua-socket
@@ -26,6 +31,8 @@ prosody_config_directory: /etc/prosody
 prosody_data_directory: /var/lib/prosody
 prosody_log_directory: /var/log/prosody
 prosody_binary: prosodyctl
+
+prosody_pidfile: /run/prosody/prosody.pid
 
 _prosody_ssl_key_directory:
   default: /tmp

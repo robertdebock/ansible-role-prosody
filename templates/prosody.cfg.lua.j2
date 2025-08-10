@@ -7,6 +7,9 @@ admins = { "admin@{{ prosody_domain }}" }
 interfaces = { "*" }
 allow_registration = {{ "true" if prosody_registration_enable else "false" }}
 
+-- Process management
+pidfile = "{{ prosody_pidfile }}"
+
 -- External addresses configuration
 {% if prosody_external_addresses is defined and prosody_external_addresses %}
 external_addresses = { {% for address in prosody_external_addresses %}"{{ address }}"{% if not loop.last %}, {% endif %}{% endfor %} }
@@ -67,6 +70,9 @@ modules_enabled = {
     "ping";
     "pep";
     "admin_adhoc";
+    {% if prosody_posix_enable %}
+    "posix";
+    {% endif %}
     
     -- HTTP modules
     "http";

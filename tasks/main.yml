@@ -7,6 +7,49 @@
   run_once: true
   delegate_to: localhost
 
+- name: Alpine - Handle init system dependencies
+  when:
+    - ansible_os_family == "Alpine"
+  block:
+
+    
+    - name: Alpine - Create machine-id if it doesn't exist
+      ansible.builtin.copy:
+        content: "{{ ansible_machine_id | default('0123456789abcdef0123456789abcdef') }}"
+        dest: /etc/machine-id
+        mode: "0644"
+    
+    - name: Alpine - Create minimal dev service script
+      ansible.builtin.copy:
+        content: |
+          #!/sbin/openrc-run
+          depend() {
+            need net
+          }
+          start() {
+            ebegin "Starting dev service"
+            eend 0
+          }
+          stop() {
+            ebegin "Stopping dev service"
+            eend 0
+          }
+        dest: /etc/init.d/dev
+        mode: "0755"
+    
+    - name: Alpine - Ensure OpenRC runlevel directory exists
+      ansible.builtin.file:
+        path: /etc/runlevels/default
+        state: directory
+        mode: "0755"
+    
+    - name: Alpine - Add dev service to default runlevel
+      ansible.builtin.file:
+        src: /etc/init.d/dev
+        dest: /etc/runlevels/default/dev
+        state: link
+      ignore_errors: true
+
 - name: Install prosody
   ansible.builtin.package:
     name: "{{ prosody_packages }}"
@@ -23,6 +66,7 @@
     - "{{ prosody_data_directory }}"
     - "{{ prosody_log_directory }}"
     - "{{ prosody_config_directory }}/conf.d"
+    - "{{ prosody_pidfile | dirname }}"
 
 - name: Configure prosody
   ansible.builtin.template:
@@ -63,8 +107,34 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: Start and enable prosody
+- name: Start and enable prosody (non-Alpine)
   ansible.builtin.service:
     name: "{{ prosody_service }}"
     state: started
     enabled: true
+  when: ansible_os_family != "Alpine"
+
+- name: Alpine - Check if prosody is running
+  ansible.builtin.command:
+    cmd: "{{ prosody_binary }} status"
+  register: prosody_alpine_status_check
+  failed_when: false
+  changed_when: false
+  when: ansible_os_family == "Alpine"
+
+- name: Alpine - Start prosody if not running
+  ansible.builtin.command:
+    cmd: "{{ prosody_binary }} start"
+  register: prosody_alpine_start
+  changed_when: 
+    - prosody_alpine_start.rc == 0
+    - "'already running' not in prosody_alpine_start.stdout"
+  failed_when: false
+  when: 
+    - ansible_os_family == "Alpine"
+    - prosody_alpine_status_check.rc != 0
+
+
+
+
+
