@@ -77,10 +77,10 @@ prosody_ssl_key: "{{ prosody_ssl_key_directory }}/prosody.key"
 
 # SSL Certificate generation settings
 prosody_ssl_common_name: "{{ prosody_domain }}"
-prosody_ssl_organization: "Example Organization"
-prosody_ssl_country: "US"
-prosody_ssl_state: "Example State"
-prosody_ssl_locality: "Example City"
+prosody_ssl_organization: "Robert de Bock"
+prosody_ssl_country: "NL"
+prosody_ssl_state: "UTRECHT"
+prosody_ssl_locality: "Breukelen"
 prosody_ssl_email: "admin@{{ prosody_domain }}"
 prosody_ssl_days: 365
 
@@ -137,6 +137,10 @@ prosody_log_level: info
 
 # Enable daemon mode
 prosody_daemon_enable: true
+
+# POSIX module (for prosodyctl process management)
+# See: https://prosody.im/doc/prosodyctl#pidfile
+prosody_posix_enable: true
 
 # User to run prosody as
 prosody_user: prosody
