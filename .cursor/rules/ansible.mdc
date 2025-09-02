@@ -41,7 +41,7 @@ alwaysApply: true
         - bar
       Suse:
         - foobar
-    
+
     xyz_packages: "{{ _xyz_packages[ansible_os_family] | default(_xyz_packages['default']) }}"
     ```
     This pattern can be used for all kinds of things, such as:
