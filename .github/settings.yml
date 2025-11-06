@@ -5,4 +5,4 @@
 repository:
   description: Install and configure prosody on your system.
   homepage: https://robertdebock.nl/
-  topics: prosody, application, infrastructure, linux, system, tools, ansible, molecule, tox, playbook
+  topics: prosody, application, infrastructure, linux, system, tools, ansible, molecule, playbook
