@@ -9,7 +9,7 @@ argument_specs:
     options:
       prosody_domain:
         type: "str"
-        default: "{{ ansible_fqdn }}"
+        default: "{{ ansible_facts['fqdn'] }}"
         description: "The domain to use for this XMPP server"
       prosody_port:
         type: "int"

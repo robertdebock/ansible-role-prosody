@@ -9,11 +9,11 @@
 
 - name: Alpine - Handle init system dependencies
   when:
-    - ansible_os_family == "Alpine"
+    - ansible_facts['os_family'] == "Alpine"
   block:
     - name: Alpine - Create machine-id if it doesn't exist
       ansible.builtin.copy:
-        content: "{{ ansible_machine_id | default('0123456789abcdef0123456789abcdef') }}"
+        content: "{{ ansible_facts['machine_id'] | default('0123456789abcdef0123456789abcdef') }}"
         dest: /etc/machine-id
         mode: "0644"
 
@@ -110,7 +110,7 @@
     name: "{{ prosody_service }}"
     state: started
     enabled: true
-  when: ansible_os_family != "Alpine"
+  when: ansible_facts['os_family'] != "Alpine"
 
 - name: Alpine - Check if prosody is running
   ansible.builtin.command:
@@ -118,7 +118,7 @@
   register: prosody_alpine_status_check
   failed_when: false
   changed_when: false
-  when: ansible_os_family == "Alpine"
+  when: ansible_facts['os_family'] == "Alpine"
 
 - name: Alpine - Start prosody if not running
   ansible.builtin.command:
@@ -129,5 +129,5 @@
     - "'already running' not in prosody_alpine_start.stdout"
   failed_when: false
   when:
-    - ansible_os_family == "Alpine"
+    - ansible_facts['os_family'] == "Alpine"
     - prosody_alpine_status_check.rc != 0

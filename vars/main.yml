@@ -22,7 +22,7 @@ _prosody_packages:
     - lua-socket
     - lua-sec
 
-prosody_packages: "{{ prosody_additional_modules + _prosody_packages[ansible_os_family] | default(_prosody_packages['default']) }}"
+prosody_packages: "{{ prosody_additional_modules + _prosody_packages[ansible_facts['os_family']] | default(_prosody_packages['default']) }}"
 
 prosody_service: prosody
 prosody_user: prosody
@@ -41,7 +41,7 @@ _prosody_ssl_key_directory:
   RedHat: /etc/pki/tls/private
   Suse: /etc/ssl/private
 
-prosody_ssl_key_directory: "{{ _prosody_ssl_key_directory[ansible_os_family] | default(_prosody_ssl_key_directory['default']) }}"
+prosody_ssl_key_directory: "{{ _prosody_ssl_key_directory[ansible_facts['os_family']] | default(_prosody_ssl_key_directory['default']) }}"
 
 _prosody_ssl_cert_directory:
   default: /tmp
@@ -50,4 +50,4 @@ _prosody_ssl_cert_directory:
   RedHat: /etc/pki/tls/certs
   Suse: /etc/ssl/certs
 
-prosody_ssl_cert_directory: "{{ _prosody_ssl_cert_directory[ansible_os_family] | default(_prosody_ssl_cert_directory['default']) }}"
+prosody_ssl_cert_directory: "{{ _prosody_ssl_cert_directory[ansible_facts['os_family']] | default(_prosody_ssl_cert_directory['default']) }}"
