@@ -45,7 +45,7 @@ The default values for the variables are set in [`defaults/main.yml`](https://gi
 # defaults file for prosody
 
 # The domain to use for this XMPP server
-prosody_domain: "{{ ansible_fqdn }}"
+prosody_domain: "{{ ansible_facts['fqdn'] }}"
 
 # External addresses for this server (optional)
 # List of IP addresses that this server is reachable on from the internet
