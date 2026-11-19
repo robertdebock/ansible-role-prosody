@@ -53,18 +53,25 @@
     name: "{{ prosody_packages }}"
     state: present
 
+# The modes match what the Alpine init script enforces for the pid and log directory.
 - name: Create prosody directories
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     owner: "{{ prosody_user }}"
     group: "{{ prosody_group }}"
-    mode: "0755"
+    mode: "{{ item.mode }}"
   loop:
-    - "{{ prosody_data_directory }}"
-    - "{{ prosody_log_directory }}"
-    - "{{ prosody_config_directory }}/conf.d"
-    - "{{ prosody_pidfile | dirname }}"
+    - path: "{{ prosody_data_directory }}"
+      mode: "0755"
+    - path: "{{ prosody_log_directory }}"
+      mode: "{{ prosody_log_directory_mode }}"
+    - path: "{{ prosody_config_directory }}/conf.d"
+      mode: "0755"
+    - path: "{{ prosody_pidfile | dirname }}"
+      mode: "{{ prosody_pid_directory_mode }}"
+  loop_control:
+    label: "{{ item.path }}"
 
 - name: Configure prosody
   ansible.builtin.template:
@@ -105,29 +112,8 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: Start and enable prosody (non-Alpine)
+- name: Start and enable prosody
   ansible.builtin.service:
     name: "{{ prosody_service }}"
     state: started
     enabled: true
-  when: ansible_facts['os_family'] != "Alpine"
-
-- name: Alpine - Check if prosody is running
-  ansible.builtin.command:
-    cmd: "{{ prosody_binary }} status"
-  register: prosody_alpine_status_check
-  failed_when: false
-  changed_when: false
-  when: ansible_facts['os_family'] == "Alpine"
-
-- name: Alpine - Start prosody if not running
-  ansible.builtin.command:
-    cmd: "{{ prosody_binary }} start"
-  register: prosody_alpine_start
-  changed_when:
-    - prosody_alpine_start.rc == 0
-    - "'already running' not in prosody_alpine_start.stdout"
-  failed_when: false
-  when:
-    - ansible_facts['os_family'] == "Alpine"
-    - prosody_alpine_status_check.rc != 0

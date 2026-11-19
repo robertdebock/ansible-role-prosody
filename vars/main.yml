@@ -51,3 +51,16 @@ _prosody_ssl_cert_directory:
   Suse: /etc/ssl/certs
 
 prosody_ssl_cert_directory: "{{ _prosody_ssl_cert_directory[ansible_facts['os_family']] | default(_prosody_ssl_cert_directory['default']) }}"
+
+# Alpine's init script enforces these modes on every start.
+_prosody_log_directory_mode:
+  default: "0755"
+  Alpine: "0750"
+
+prosody_log_directory_mode: "{{ _prosody_log_directory_mode[ansible_facts['os_family']] | default(_prosody_log_directory_mode['default']) }}"
+
+_prosody_pid_directory_mode:
+  default: "0755"
+  Alpine: "0770"
+
+prosody_pid_directory_mode: "{{ _prosody_pid_directory_mode[ansible_facts['os_family']] | default(_prosody_pid_directory_mode['default']) }}"
