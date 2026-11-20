@@ -46,7 +46,8 @@
         src: /etc/init.d/dev
         dest: /etc/runlevels/default/dev
         state: link
-      failed_when: false
+      failed_when:
+        - false
 
 - name: Install prosody
   ansible.builtin.package:
